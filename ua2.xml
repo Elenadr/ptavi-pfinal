@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<config>
+    <account username="maritere@urjc.com" passwd="1995"/>
+    <uaserver ip="127.0.0.1" puerto="8001"/>
+    <rtpaudio puerto="24072"/>
+    <regproxy ip="127.0.0.1" puerto="8687"/>
+    <log path="./log_ua2.txt"/>
+    <audio path="./cancion.mp3"/>
+</config>
