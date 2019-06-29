@@ -3,25 +3,24 @@
 
 import sys
 import time
+import socket
 from xml.sax import make_parser
 from xml.sax.handler import ContentHandler
 
 class Ua1Handler(ContentHandler):
     def __init__(self):
-        self.data = []
+
         self.dicc_ua1xml = {'account': ['username', 'passwd'],
                         'uaserver': ['ip', 'puerto'], 'rtpaudio': ['puerto'],
                         'regproxy': ['ip', 'puerto'],
                         'log': ['path'], 'audio': ['path']}
+        self.diccdata = {}
     def startElement(self, name, attrs):
-        diccionario = {}
         if name in self.dicc_ua1xml:
-            for atributo in self.dicc_ua1xml[name]:
-                diccionario[name+'_'+atributo] = attrs.get(atributo, '')
-            self.data.append(diccionario)
-
+            for atribute in self.dicc_ua1xml[name]:
+                self.diccdata[name+"_"+atribute] = attrs.get(atribute, "")
     def get_tags(self):
-        return self.data
+        return self.diccdata
 
 def log(message, log_path):
     fich = open(log_path, "a")
@@ -44,6 +43,7 @@ if __name__ == "__main__":
     data = uHandler.get_tags()
     print(data)
 
+
     ADDRESS = data['account_username']
     PORT = data['uaserver_puerto']
     FILELOG = data['log_path']
@@ -52,8 +52,7 @@ if __name__ == "__main__":
 
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
         my_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        my_socket.connect((IPPROXY, PORTPROXY))
-        LINE = ''
+        my_socket.connect((IPPROXY, int(PORTPROXY)))
 
         if METHOD == 'REGISTER':
             LINE = (METHOD + ' sip:' + ADDRESS + ':' + PORT +
