@@ -1,9 +1,6 @@
-
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-"""
-Clase (y programa principal) para un servidor de eco en UDP simple
-"""
+"""Programa para el servidor"""
 
 import sys
 import socketserver
@@ -14,31 +11,32 @@ from uaclient import log
 
 
 class EchoHandler(socketserver.DatagramRequestHandler):
-
+    """Server class."""
 
     def handle(self):
+        """Handle."""
         while 1:
             log("Starting...", LOGFILE)
-            # Leyendo línea a línea lo que nos envía el cliente
             line = self.rfile.read()
-            print("THE PROXY SENT: " + line.decode('utf-8'))
+            print("THE PROXY SEND: " + line.decode('utf-8'))
             lista = line.decode('utf-8')
             METHOD = lista.split(" ")[0]
 
-            if METHOD== 'INVITE':
-                self.wfile.write(b"SIP/2.0 100 Trying "
-                                 b"SIP/2.0 180 Ringing "
-                                 b"SIP/2.0 200 OK \r\n\r\n")
+            if METHOD == 'INVITE':
+                self.wfile.write(b"SIP/2.0 100 Trying \r\n\r\n")
+                self.wfile.write(b"SIP/2.0 180 Ringing\r\n\r\n")
+                self.wfile.write(b"SIP/2.0 200 OK \r\n\r\n")
                 break
                 log('Sent to ' + SERVER + ':' + PORT + ': ' + ADDRESS, LOGFILE)
                 log('Received from: ', LOGFILE)
-            if METHOD== 'ACK':
-                cancion = './mp32rtp -i' + SERVER + '-p 23032 < '
-                cancion = AUDIOFILE
-                print("Vamos a ejecutar", cancion)
-                os.system(cancion)
+            if METHOD == 'ACK':
+                aEjecutar = './mp32rtp -i' + SERVER + '-p 23032 < '
+                aEjecutar = AUDIOFILE
+                print("Vamos a ejecutar", aEjecutar)
+                os.system(aEjecutar)
                 print("Enviamos cancion")
-                log('Sent to ' + SERVER + ':' + PORT + ': ' + ADDRESS + cancion)
+                log('Sent to ' + SERVER + ':' + PORT + ': ' +
+                    ADDRESS + aEjecutar)
                 break
             if METHOD == 'BYE':
                 self.wfile.write(b"SIP/2.0 200 OK\r\n\r\n")
@@ -66,6 +64,7 @@ if __name__ == "__main__":
     parser.setContentHandler(uHandler)
     parser.parse(open(CONFIG))
     dato = uHandler.get_tags()
+    print(dato)
 
     ADDRESS = dato['account_username']
     PORT = dato['uaserver_puerto']
@@ -75,8 +74,7 @@ if __name__ == "__main__":
     SERVER = dato['uaserver_ip']
     AUDIOPORT = int(dato['rtpaudio_puerto'])
     AUDIOFILE = dato['audio_path']
-    IP = '127.0.0.1'
-    serv = socketserver.UDPServer((IP, int(PORT)), EchoHandler)
+    serv = socketserver.UDPServer((SERVER, int(PORT)), EchoHandler)
     print('Listening...')
     log("Starting...", LOGFILE)
     try:
