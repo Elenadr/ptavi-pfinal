@@ -53,17 +53,21 @@ if __name__ == "__main__":
     parser.parse(open(CONFIG))
     dato = uHandler.get_tags()
     print(dato)
-
+    if dato['regproxy_puerto'] == '':
+        IPPROXY = '127.0.0.1'
+    else:
+        IPPROXY = dato['regproxy_ip']
     PASSWORD = dato['account_passwd']
     ADDRESS = dato['account_username']
     PORT = dato['uaserver_puerto']
     LOGFILE = dato['log_path']
-    IPPROXY = dato['regproxy_ip']
     PORTPROXY = dato['regproxy_puerto']
-    SERVER = dato['uaserver_ip']
+    if dato['uaserver_ip'] == '':
+        IP = '127.0.0.1'
+    else:
+        SERVER = dato['uaserver_ip']
     AUDIOPORT = dato['rtpaudio_puerto']
     AUDIOFILE = dato['audio_path']
-
 try:
 
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as my_socket:
@@ -126,7 +130,7 @@ try:
         LINEPROXY = data.decode('utf-8')
         print('Received from Proxy:\r\n', LINEPROXY)
         MESSAGE = LINEPROXY.replace("\r\n", " ")
-        log('Received from ' + IP_PROXY + ':' + str(PORT_PROXY) + ': ' +
+        log('Received from ' + IPPROXY + ':' + str(PORTPROXY) + ': ' +
             MESSAGE, LOGFILE)
 
         PROXYLIST = LINEPROXY.split()
